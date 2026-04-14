@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+yfinance
+requests
+feedparser
+python-dotenv
+pydantic
+upstox-python-sdk
