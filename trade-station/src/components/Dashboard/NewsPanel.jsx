@@ -32,7 +32,7 @@ export default function NewsPanel() {
     setLoading(true);
     setError(null);
     try {
-      const res  = await fetch('http://localhost:8000/api/news');
+      const res  = await fetch('https://greencandle.onrender.com/api/news');
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         setArticles(data);
