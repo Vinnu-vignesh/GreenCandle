@@ -71,7 +71,7 @@ export default function Layout() {
   const nifty  = liveData['NIFTY 50'] ?? {};
   const sensex = liveData['SENSEX']   ?? {};
 
-  const IndexPill = ({ label, data }) => {
+  const renderIndexPill = (label, data) => {
     const price  = data.price  ?? null;
     const change = data.change ?? 0;
     const up     = change >= 0;
@@ -95,7 +95,7 @@ export default function Layout() {
   /* ───────────────────────────────────────────────
      Sidebar inner content (shared by desktop & drawer)
   ─────────────────────────────────────────────── */
-  const SidebarContent = ({ expanded }) => (
+  const renderSidebarContent = (expanded) => (
     <div className="flex flex-col h-full">
       {/* Collapse toggle — desktop only */}
       {!isMobile && (
@@ -286,8 +286,8 @@ export default function Layout() {
       {/* ══════════════ NIFTY & SENSEX FIXED BAR — hidden on mobile ══════════════ */}
       <div className="shrink-0 h-8 bg-[#06060a] border-b border-[#141418] items-center z-20 hidden md:flex">
         <div className="flex items-center divide-x divide-[#1e1e28]">
-          <IndexPill label="NIFTY 50" data={nifty} />
-          <IndexPill label="SENSEX"   data={sensex} />
+          {renderIndexPill("NIFTY 50", nifty)}
+          {renderIndexPill("SENSEX", sensex)}
         </div>
         <div className="ml-auto mr-4 flex items-center gap-1.5">
           <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse opacity-60" />
@@ -310,7 +310,7 @@ export default function Layout() {
             <aside
               className={`fixed top-0 left-0 h-full z-50 w-[260px] bg-[#07070a] border-r border-[#141418] flex flex-col transition-transform duration-250 ease-in-out ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
             >
-              <SidebarContent expanded={true} />
+              {renderSidebarContent(true)}
             </aside>
           </>
         )}
@@ -322,7 +322,7 @@ export default function Layout() {
               sidebarOpen ? 'w-[220px]' : 'w-[48px]'
             }`}
           >
-            <SidebarContent expanded={sidebarOpen} />
+            {renderSidebarContent(sidebarOpen)}
           </aside>
         )}
 
