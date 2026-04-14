@@ -221,7 +221,7 @@ export default function BarReplay() {
     setCursor(0);
 
     try {
-      const res  = await fetch(`http://localhost:8000/api/bar-replay/${encodeURIComponent(symbol)}?interval=${tf}`);
+      const res  = await fetch(`https://greencandle.onrender.com/api/bar-replay/${encodeURIComponent(symbol)}?interval=${tf}`)
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) { setLoading(false); return; }
 
