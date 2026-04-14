@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>GreenCandle — Project Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',sans-serif;font-size:11pt;color:#1a1a2e;background:#fff;line-height:1.7;}
+  .page{max-width:900px;margin:0 auto;padding:48px 56px;}
+
+  /* Cover */
+  .cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#0a0a1a 0%,#0d1f0d 50%,#0a0a1a 100%);color:#fff;page-break-after:always;}
+  .cover .logo-box{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:40px;}
+  .cover h1{font-size:42pt;font-weight:800;letter-spacing:-1px;margin-bottom:8px;}
+  .cover .tagline{font-size:14pt;color:#86efac;margin-bottom:40px;}
+  .cover .meta{font-size:10pt;color:#6b7280;border-top:1px solid #374151;padding-top:24px;margin-top:auto;}
+  .cover .meta span{display:block;margin:4px 0;}
+
+  /* TOC */
+  .toc{page-break-after:always;}
+  .toc h2{font-size:18pt;font-weight:700;margin-bottom:24px;color:#166534;border-bottom:2px solid #22c55e;padding-bottom:8px;}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dotted #e5e7eb;font-size:11pt;}
+  .toc li::before{content:counter(toc)".";font-weight:700;color:#22c55e;min-width:24px;}
+  .toc .sub{padding-left:32px;font-size:10pt;color:#6b7280;border-bottom:none;padding-top:2px;padding-bottom:2px;}
+  .toc .sub::before{content:counter(toc,lower-alpha)".";font-weight:600;color:#86efac;}
+
+  /* Headings */
+  h1.sec{font-size:22pt;font-weight:800;color:#166534;margin:40px 0 16px;border-left:5px solid #22c55e;padding-left:16px;}
+  h2.sec{font-size:15pt;font-weight:700;color:#1a1a2e;margin:32px 0 12px;}
+  h3.sec{font-size:12pt;font-weight:600;color:#374151;margin:20px 0 8px;}
+  p{margin-bottom:12px;color:#374151;}
+
+  /* Chips / badges */
+  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:9pt;font-weight:600;margin:2px;}
+  .badge.green{background:#dcfce7;color:#166534;}
+  .badge.blue{background:#dbeafe;color:#1e40af;}
+  .badge.purple{background:#ede9fe;color:#5b21b6;}
+  .badge.orange{background:#ffedd5;color:#9a3412;}
+  .badge.gray{background:#f3f4f6;color:#374151;}
+
+  /* Cards */
+  .card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px 24px;margin:16px 0;}
+  .card.green{border-left:4px solid #22c55e;background:#f0fdf4;}
+  .card.blue{border-left:4px solid #3b82f6;background:#eff6ff;}
+  .card.orange{border-left:4px solid #f97316;background:#fff7ed;}
+  .card.red{border-left:4px solid #ef4444;background:#fef2f2;}
+  .card.purple{border-left:4px solid #8b5cf6;background:#f5f3ff;}
+  .card h4{font-size:11pt;font-weight:700;margin-bottom:8px;color:#1a1a2e;}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:10pt;}
+  th{background:#166534;color:#fff;padding:10px 14px;text-align:left;font-weight:600;}
+  td{padding:9px 14px;border-bottom:1px solid #e5e7eb;vertical-align:top;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  /* Code */
+  pre,code{font-family:'Fira Code',monospace;font-size:9.5pt;}
+  pre{background:#1e1e2e;color:#cdd6f4;padding:16px 20px;border-radius:10px;overflow:auto;margin:12px 0;line-height:1.6;}
+  .kw{color:#cba6f7;}
+  .str{color:#a6e3a1;}
+  .cm{color:#6c7086;}
+  .fn{color:#89b4fa;}
+  .num{color:#fab387;}
+
+  /* Flow diagram */
+  .flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:16px 0;}
+  .flow-box{background:#0d1f0d;color:#86efac;padding:8px 16px;border-radius:8px;font-size:9.5pt;font-weight:600;white-space:nowrap;}
+  .flow-arrow{color:#22c55e;font-size:18pt;padding:0 4px;}
+
+  /* Architecture diagram */
+  .arch{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;margin:24px 0;align-items:center;}
+  .arch-col{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;}
+  .arch-col h4{font-size:10pt;font-weight:700;color:#166534;margin-bottom:10px;text-align:center;}
+  .arch-item{display:flex;align-items:center;gap:8px;font-size:9.5pt;padding:4px 0;color:#374151;}
+  .arch-mid{text-align:center;color:#22c55e;font-size:20pt;}
+  .arch-center{background:#dbeafe;border:1px solid #93c5fd;border-radius:12px;padding:12px;grid-column:2;text-align:center;writing-mode:vertical-rl;font-size:9pt;font-weight:700;color:#1e40af;}
+
+  /* Explain guide */
+  .guide-step{background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:16px 20px;margin:12px 0;}
+  .guide-step .step-num{display:inline-block;background:#f59e0b;color:#fff;width:26px;height:26px;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:10pt;margin-right:8px;}
+
+  /* Page break */
+  .break{page-break-before:always;}
+
+  /* Footer note */
+  .footer-note{margin-top:40px;padding-top:16px;border-top:1px solid #e5e7eb;font-size:9pt;color:#9ca3af;text-align:center;}
+
+  ul,ol{padding-left:24px;margin-bottom:12px;}
+  li{margin:4px 0;}
+  strong{color:#1a1a2e;}
+  .highlight{background:#fef9c3;padding:1px 4px;border-radius:3px;}
+
+  @media print{
+    .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .card{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    pre{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ COVER ═══ -->
+<div class="cover">
+  <div class="page" style="width:100%">
+    <div class="logo-box">📈</div>
+    <h1>GreenCandle</h1>
+    <div class="tagline">Real-Time Stock Market Simulation & Trading Platform</div>
+    <div style="margin:32px 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <span class="badge green">React 18</span>
+      <span class="badge blue">FastAPI</span>
+      <span class="badge purple">Firebase</span>
+      <span class="badge orange">Upstox API</span>
+      <span class="badge gray">Python 3.12</span>
+      <span class="badge gray">WebSocket</span>
+    </div>
+    <div class="meta">
+      <span><strong>Project Report — Technical Documentation</strong></span>
+      <span>Author: Vinnu &nbsp;|&nbsp; April 2026</span>
+      <span>B.Tech Computer Science — Final Year Project</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ PAGE 1 ═══ -->
+<div class="page">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li>Project Overview &amp; Objective</li>
+    <li>Technology Stack</li>
+    <li>System Architecture</li>
+    <li>Backend — FastAPI Server
+      <ol class="sub">
+        <li>yfinance Price Seeding</li>
+        <li>Upstox API WebSocket Stream</li>
+        <li>Historical OHLC Data API</li>
+        <li>Trade Records (SQLite)</li>
+        <li>News RSS Feed</li>
+      </ol>
+    </li>
+    <li>Frontend — React Application
+      <ol class="sub">
+        <li>Component Architecture</li>
+        <li>State Management</li>
+        <li>TradingChart &amp; Drawing Tools</li>
+        <li>Live WebSocket Hook</li>
+      </ol>
+    </li>
+    <li>Firebase Integration
+      <ol class="sub">
+        <li>Authentication</li>
+        <li>Firestore Cloud Database</li>
+        <li>Security Rules</li>
+      </ol>
+    </li>
+    <li>How Dynamic Prices Work — End-to-End</li>
+    <li>Key Features Deep-Dive</li>
+    <li>UI / UX Design Decisions</li>
+    <li>Data Flow Diagrams</li>
+    <li>How to Explain to Your Project Guide</li>
+  </ol>
+</div>
+
+<!-- ═══ 1. OVERVIEW ═══ -->
+<h1 class="sec">1. Project Overview &amp; Objective</h1>
+<p>
+  <strong>GreenCandle</strong> is a full-stack, real-time stock market simulation and virtual trading platform
+  built for the Indian equity market. It allows users to watch live NSE (National Stock Exchange) stock prices,
+  draw technical analysis tools on professional-grade candlestick charts, execute virtual paper trades with a
+  ₹1,00,000 simulated balance, and learn finance through curated educational content.
+</p>
+
+<div class="card green">
+  <h4>🎯 Core Objective</h4>
+  <p>
+    To build a production-quality trading dashboard that mirrors real brokerage terminals like Zerodha Kite —
+    with real-time market data, professional charting, and user authentication — without any real financial risk.
+    The project demonstrates the integration of modern web technologies, financial APIs, cloud databases,
+    and WebSocket-based real-time systems.
+  </p>
+</div>
+
+<h2 class="sec">What Problem Does It Solve?</h2>
+<p>
+  Beginner traders need a safe environment to practice reading charts and executing trades. Existing platforms
+  are either too complex or require real money. GreenCandle provides:
+</p>
+<ul>
+  <li>A <strong>risk-free</strong> virtual trading environment with real market prices</li>
+  <li>Professional candlestick charting with the same tools used by real traders</li>
+  <li>Per-user data isolation — each user has their own portfolio, watchlist, and trade history</li>
+  <li>Real-time price feeds through industry-standard WebSocket APIs</li>
+  <li>Market news aggregation and financial education built in</li>
+</ul>
+
+<!-- ═══ 2. TECH STACK ═══ -->
+<div class="break"></div>
+<h1 class="sec">2. Technology Stack</h1>
+
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Purpose</th><th>Version</th></tr>
+  <tr><td><strong>Frontend Framework</strong></td><td>React.js</td><td>UI component library, SPA routing</td><td>18.x</td></tr>
+  <tr><td><strong>Build Tool</strong></td><td>Vite</td><td>Dev server + production bundler</td><td>6.x</td></tr>
+  <tr><td><strong>Styling</strong></td><td>Tailwind CSS</td><td>Utility-first CSS, dark theme</td><td>3.x</td></tr>
+  <tr><td><strong>Charting</strong></td><td>lightweight-charts</td><td>TradingView's open-source charting lib</td><td>4.x</td></tr>
+  <tr><td><strong>Routing</strong></td><td>React Router DOM</td><td>Client-side SPA navigation</td><td>6.x</td></tr>
+  <tr><td><strong>Icons</strong></td><td>Lucide React</td><td>SVG icon set</td><td>latest</td></tr>
+  <tr><td><strong>Resizable Panels</strong></td><td>react-resizable-panels</td><td>Drag-to-resize chart/order layout</td><td>latest</td></tr>
+  <tr><td><strong>Backend</strong></td><td>FastAPI (Python)</td><td>REST API + WebSocket server</td><td>0.x</td></tr>
+  <tr><td><strong>ASGI Server</strong></td><td>Uvicorn</td><td>Runs FastAPI in production</td><td>latest</td></tr>
+  <tr><td><strong>Market Data</strong></td><td>yfinance (Python)</td><td>Historical OHLC &amp; price seeding</td><td>latest</td></tr>
+  <tr><td><strong>Live Feed</strong></td><td>Upstox Market API</td><td>Real-time NSE tick data via WebSocket</td><td>v3</td></tr>
+  <tr><td><strong>Authentication</strong></td><td>Firebase Auth</td><td>Google OAuth + Email/Password login</td><td>v10</td></tr>
+  <tr><td><strong>Cloud DB</strong></td><td>Firestore</td><td>Per-user portfolio &amp; watchlist storage</td><td>v10</td></tr>
+  <tr><td><strong>Trade Records</strong></td><td>SQLite</td><td>Persistent server-side trade history</td><td>built-in</td></tr>
+  <tr><td><strong>News Feed</strong></td><td>feedparser (Python)</td><td>RSS aggregator for financial news</td><td>6.x</td></tr>
+  <tr><td><strong>Environment</strong></td><td>python-dotenv</td><td>Secure API key management</td><td>latest</td></tr>
+</table>
+
+<!-- ═══ 3. ARCHITECTURE ═══ -->
+<div class="break"></div>
+<h1 class="sec">3. System Architecture</h1>
+<p>GreenCandle uses a <strong>client-server architecture</strong> with a React SPA on the front-end communicating
+   with a Python FastAPI backend via REST and WebSocket protocols. Firebase handles authentication and cloud
+   data storage independently.</p>
+
+<div class="card blue">
+  <h4>High-Level Architecture</h4>
+  <div style="font-family:'Fira Code',monospace;font-size:9.5pt;line-height:2;">
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin:8px 0;">
+      <div style="background:#0f172a;color:#86efac;padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-weight:700;margin-bottom:8px;color:#4ade80;">🌐 BROWSER</div>
+        <div>React SPA (Vite)</div>
+        <div style="color:#64748b;">Port 5173</div>
+        <div style="margin-top:6px;font-size:8.5pt;">Auth Context → Firebase</div>
+        <div style="font-size:8.5pt;">Portfolio → Firestore</div>
+        <div style="font-size:8.5pt;">Chart → lightweight-charts</div>
+      </div>
+      <div style="text-align:center;color:#22c55e;font-size:20pt;">⇆</div>
+      <div style="background:#0f172a;color:#93c5fd;padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-weight:700;margin-bottom:8px;color:#60a5fa;">⚙️ FASTAPI BACKEND</div>
+        <div>Python + Uvicorn</div>
+        <div style="color:#64748b;">Port 8000</div>
+        <div style="margin-top:6px;font-size:8.5pt;">GET /api/history → yfinance</div>
+        <div style="font-size:8.5pt;">WS /ws/live → Upstox stream</div>
+        <div style="font-size:8.5pt;">GET /api/news → RSS feeds</div>
+        <div style="font-size:8.5pt;">POST /api/trades → SQLite</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin:4px 0;font-size:9pt;color:#64748b;">
+      ↕ Firebase SDK (direct browser → Firebase, no backend needed)
+    </div>
+    <div style="background:#1e1b4b;color:#c4b5fd;padding:10px;border-radius:8px;text-align:center;">
+      🔥 Firebase (Google Cloud) — Auth + Firestore realtime database
+    </div>
+  </div>
+</div>
+
+<h2 class="sec">Directory Structure</h2>
+<pre>
+GreenStock/
+├── backend/                    <span class="cm"># FastAPI Python server</span>
+│   ├── main.py                 <span class="cm"># All API routes + WebSocket</span>
+│   ├── trades.db               <span class="cm"># SQLite trade records</span>
+│   ├── .env                    <span class="cm"># Upstox API keys (secret)</span>
+│   └── requirements.txt
+│
+└── trade-station/              <span class="cm"># React frontend (Vite)</span>
+    └── src/
+        ├── App.jsx             <span class="cm"># Router + Auth + Portfolio providers</span>
+        ├── firebase.js         <span class="cm"># Firebase SDK config</span>
+        ├── pages/
+        │   ├── Login.jsx       <span class="cm"># Auth page (Google + email)</span>
+        │   ├── Home.jsx        <span class="cm"># Main chart + order entry + news</span>
+        │   ├── Portfolio.jsx   <span class="cm"># Holdings, orders, P&amp;L</span>
+        │   ├── BarReplay.jsx   <span class="cm"># Historical replay mode</span>
+        │   └── Education.jsx   <span class="cm"># Zerodha Varsity links + quiz</span>
+        ├── components/
+        │   ├── Auth/AuthGuard.jsx        <span class="cm"># Route protection</span>
+        │   ├── Chart/TradingChart.jsx    <span class="cm"># Main candlestick chart</span>
+        │   ├── Chart/DrawingToolsCanvas.jsx <span class="cm"># Canvas overlay tools</span>
+        │   ├── Dashboard/OrderEntry.jsx  <span class="cm"># Buy/Sell panel</span>
+        │   ├── Dashboard/Watchlist.jsx   <span class="cm"># Live price list</span>
+        │   ├── Dashboard/NewsPanel.jsx   <span class="cm"># Market news feed</span>
+        │   └── Layout/Layout.jsx         <span class="cm"># App shell + sidebar</span>
+        ├── context/
+        │   ├── AuthContext.jsx           <span class="cm"># Firebase Auth state</span>
+        │   └── PortfolioContext.jsx      <span class="cm"># Virtual trading state</span>
+        └── hooks/
+            └── useWatchlistWS.jsx        <span class="cm"># WebSocket live data hook</span>
+</pre>
+
+<!-- ═══ 4. BACKEND ═══ -->
+<div class="break"></div>
+<h1 class="sec">4. Backend — FastAPI Server</h1>
+<p>
+  The backend is a single Python file (<code>main.py</code>) built with <strong>FastAPI</strong>, a modern
+  async Python web framework. It runs on <strong>Uvicorn</strong> (ASGI server) and handles all market data
+  duties: seeding prices, streaming live data, serving historical candles, recording trades, and aggregating news.
+</p>
+
+<h2 class="sec">4a. yfinance Price Seeding &amp; Periodic Refresh</h2>
+<div class="card orange">
+  <h4>Why yfinance?</h4>
+  <p>
+    Even without an active Upstox connection, the app needs <em>real</em> stock prices. yfinance is an unofficial
+    Yahoo Finance API wrapper that lets us fetch OHLC data for any NSE stock by appending <code>.NS</code> to
+    the symbol (e.g., <code>RELIANCE.NS</code>).
+  </p>
+</div>
+<p><strong>How it works:</strong></p>
+<ol>
+  <li>On startup, a background thread calls <code>seed_prices_from_yfinance()</code></li>
+  <li>It fetches <strong>1-minute intraday data</strong> for today (<code>period="1d", interval="1m"</code>)</li>
+  <li>Current price = last 1-minute candle's close. Change % = <code>(current − today's open) / today's open × 100</code></li>
+  <li>These values are stored in an in-memory <code>LIVE_PRICES</code> dictionary</li>
+  <li>An asyncio task also runs this refresh <strong>every 5 minutes</strong> automatically</li>
+</ol>
+<pre>
+<span class="cm"># Simplified version of seed_prices_from_yfinance()</span>
+<span class="kw">def</span> <span class="fn">seed_prices_from_yfinance</span>():
+    <span class="kw">for</span> symbol, yf_ticker <span class="kw">in</span> YF_TICKER_MAP.items():
+        intra = yf.Ticker(yf_ticker).history(
+            period=<span class="str">"1d"</span>, interval=<span class="str">"1m"</span>
+        )
+        current_price = intra[<span class="str">"Close"</span>].iloc[-<span class="num">1</span>]   <span class="cm"># most recent 1m close</span>
+        open_price    = intra[<span class="str">"Open"</span>].iloc[<span class="num">0</span>]    <span class="cm"># today's first candle open</span>
+        change_pct    = (current_price - open_price) / open_price * <span class="num">100</span>
+        LIVE_PRICES[symbol][<span class="str">"price"</span>]  = current_price
+        LIVE_PRICES[symbol][<span class="str">"change"</span>] = change_pct
+</pre>
+
+<h2 class="sec">4b. Upstox API — Real-Time NSE WebSocket Stream</h2>
+<div class="card green">
+  <h4>What is Upstox?</h4>
+  <p>
+    Upstox is a SEBI-registered Indian stockbroker that provides a <strong>Market Data Streamer API v3</strong>.
+    Once a user authenticates via OAuth 2.0, the backend receives live tick data (LTP — Last Traded Price +
+    Previous Close) for every subscribed NSE symbol via a persistent WebSocket connection.
+  </p>
+</div>
+<p><strong>Authentication Flow:</strong></p>
+<ol>
+  <li>User clicks <strong>"⚡ Upstox"</strong> button → browser opens <code>/auth/login</code></li>
+  <li>Backend redirects to Upstox's OAuth 2.0 dialog with <code>client_id</code> and <code>redirect_uri</code></li>
+  <li>User logs in on Upstox → Upstox sends an <strong>authorization code</strong> to <code>/callback</code></li>
+  <li>Backend exchanges the code for an <strong>access token</strong> via POST to Upstox's token endpoint</li>
+  <li>Token is stored in memory; <code>start_upstox_stream()</code> is called</li>
+  <li><code>MarketDataStreamerV3</code> opens a WebSocket → backend receives live ticks and updates <code>LIVE_PRICES</code></li>
+</ol>
+<pre>
+<span class="cm"># Each tick message from Upstox looks like:</span>
+{
+  <span class="str">"feeds"</span>: {
+    <span class="str">"NSE_EQ|INE002A01018"</span>: {       <span class="cm"># Reliance instrument key</span>
+      <span class="str">"ltpc"</span>: {
+        <span class="str">"ltp"</span>: <span class="num">1248.50</span>,            <span class="cm"># Last Traded Price</span>
+        <span class="str">"cp"</span>:  <span class="num">1284.70</span>             <span class="cm"># Close Price (prev day)</span>
+      }
+    }
+  }
+}
+<span class="cm"># Backend calculates: change_pct = (ltp - cp) / cp * 100</span>
+</pre>
+
+<h2 class="sec">4c. Live WebSocket → Frontend (<code>/ws/live</code>)</h2>
+<p>
+  The frontend connects to <code>ws://localhost:8000/ws/live</code>. The backend WebSocket handler
+  continuously broadcasts the <code>LIVE_PRICES</code> dictionary as JSON every second:
+</p>
+<pre>
+<span class="cm"># Broadcast loop inside /ws/live handler</span>
+<span class="kw">while True</span>:
+    <span class="kw">await</span> websocket.send_json(LIVE_PRICES)   <span class="cm"># sends all symbols at once</span>
+    <span class="kw">await</span> asyncio.sleep(<span class="num">1</span>)                   <span class="cm"># 1-second tick rate</span>
+</pre>
+
+<h2 class="sec">4d. Historical OHLC Data (<code>/api/history</code>)</h2>
+<p>When a user selects a stock and timeframe, the chart fetches historical candles:</p>
+<pre>
+GET /api/history?symbol=RELIANCE&amp;interval=5m&amp;days=10
+</pre>
+<p>
+  The backend uses yfinance to download candlestick data (open, high, low, close, volume) for the requested
+  period and interval, converts timestamps to Unix seconds, and returns a JSON array. The chart then renders
+  these as candlesticks and overlays live ticks from the WebSocket on top.
+</p>
+
+<h2 class="sec">4e. Trade Records — SQLite</h2>
+<p>
+  When a virtual sell order is executed, the frontend POSTs the trade details to <code>/api/trades</code>.
+  FastAPI stores each record in a local <strong>SQLite database</strong> (<code>trades.db</code>).
+  The <code>/api/trades</code> GET endpoint returns all trade history for display in the Portfolio page.
+</p>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+  <tr><td>id</td><td>INTEGER PK</td><td>Auto-increment trade ID</td></tr>
+  <tr><td>symbol</td><td>TEXT</td><td>Stock symbol (e.g., RELIANCE)</td></tr>
+  <tr><td>side</td><td>TEXT</td><td>BUY or SELL</td></tr>
+  <tr><td>qty</td><td>INTEGER</td><td>Number of shares</td></tr>
+  <tr><td>entry_price</td><td>REAL</td><td>Average cost per share</td></tr>
+  <tr><td>exit_price</td><td>REAL</td><td>Sell price per share</td></tr>
+  <tr><td>pl</td><td>REAL</td><td>Profit or Loss in ₹</td></tr>
+  <tr><td>pl_pct</td><td>REAL</td><td>P&amp;L as percentage</td></tr>
+  <tr><td>time</td><td>TEXT</td><td>ISO timestamp of the trade</td></tr>
+</table>
+
+<h2 class="sec">4f. Market News RSS Feed (<code>/api/news</code>)</h2>
+<p>
+  The backend uses Python's <strong>feedparser</strong> library to parse RSS feeds from 4 Indian financial
+  news sources: Economic Times, Moneycontrol, LiveMint, and Business Standard. Results are cached in memory
+  for 5 minutes to avoid pinging RSS servers too frequently.
+</p>
+
+<!-- ═══ 5. FRONTEND ═══ -->
+<div class="break"></div>
+<h1 class="sec">5. Frontend — React Application</h1>
+
+<h2 class="sec">5a. Component Architecture</h2>
+<p>The React app uses a <strong>nested provider pattern</strong> at the root:</p>
+<pre>
+&lt;<span class="fn">BrowserRouter</span>&gt;
+  &lt;<span class="fn">AuthProvider</span>&gt;           <span class="cm">{/* Firebase auth state */}</span>
+    &lt;<span class="fn">PortfolioProvider</span>&gt;   <span class="cm">{/* Virtual trading state */}</span>
+      &lt;<span class="fn">Routes</span>&gt;
+        &lt;<span class="fn">Route</span> path=<span class="str">"/login"</span>  element=<span class="str">&lt;Login /&gt;</span> /&gt;
+        &lt;<span class="fn">Route</span> path=<span class="str">"/"</span>      element=<span class="str">&lt;AuthGuard&gt;&lt;Layout /&gt;&lt;/AuthGuard&gt;</span>&gt;
+          &lt;<span class="fn">Route</span> index element=<span class="str">&lt;Home /&gt;</span> /&gt;         <span class="cm">{/* Chart + News */}</span>
+          &lt;<span class="fn">Route</span> path=<span class="str">"portfolio"</span> element=<span class="str">&lt;Portfolio /&gt;</span> /&gt;
+          &lt;<span class="fn">Route</span> path=<span class="str">"replay"</span>    element=<span class="str">&lt;BarReplay /&gt;</span> /&gt;
+          &lt;<span class="fn">Route</span> path=<span class="str">"education"</span> element=<span class="str">&lt;Education /&gt;</span> /&gt;
+        &lt;/<span class="fn">Route</span>&gt;
+      &lt;/<span class="fn">Routes</span>&gt;
+    &lt;/<span class="fn">PortfolioProvider</span>&gt;
+  &lt;/<span class="fn">AuthProvider</span>&gt;
+&lt;/<span class="fn">BrowserRouter</span>&gt;
+</pre>
+
+<h2 class="sec">5b. TradingChart — The Core Component</h2>
+<p>
+  <code>TradingChart.jsx</code> wraps <strong>lightweight-charts v4</strong> (TradingView's open-source
+  charting library). It handles:
+</p>
+<ul>
+  <li><strong>Historical data fetch</strong> — calls <code>/api/history</code> on mount and on symbol/interval change</li>
+  <li><strong>Live tick rendering</strong> — receives the latest price from <code>liveData</code> prop (WebSocket) and calls <code>series.update()</code> to update the last candle in real-time</li>
+  <li><strong>Indicator overlays</strong> — EMA 9, EMA 21, SMA 50 rendered as line series on the same chart</li>
+  <li><strong>Volume bars</strong> — rendered as a secondary histogram series</li>
+  <li><strong>Responsive resize</strong> — ResizeObserver automatically resizes the chart canvas</li>
+  <li><strong>Drawing tools canvas</strong> — an HTML5 Canvas element overlaid on the chart for trend lines, Fibonacci retracements, etc.</li>
+</ul>
+
+<h2 class="sec">5c. Drawing Tools — HTML5 Canvas Overlay</h2>
+<p>
+  All drawing tools (trend lines, horizontal lines, rectangles, Fibonacci retracements, Andrew's Pitchfork, etc.)
+  are drawn on a transparent <strong>HTML5 Canvas</strong> element positioned absolutely over the chart.
+</p>
+<p>Drawings are stored as <strong>logical coordinates</strong> (not pixel coordinates):</p>
+<ul>
+  <li><code>lx1, lx2</code> — time-axis logical index (survives horizontal zoom/scroll)</li>
+  <li><code>py1, py2</code> — price values (survive vertical price-scale rescale)</li>
+</ul>
+<p>
+  On every render, pixel positions are calculated fresh using <code>series.priceToCoordinate(price)</code>
+  and <code>chart.timeScale().logicalToCoordinate(index)</code>. This is why drawings move correctly when
+  you zoom or rescale the chart.
+</p>
+<p>
+  A <strong>requestAnimationFrame polling loop</strong> detects price-scale changes (no native event exists
+  in lightweight-charts for this) and re-renders drawings immediately.
+</p>
+
+<h2 class="sec">5d. useWatchlistWS — Live Data Hook</h2>
+<p>
+  This custom React hook manages the WebSocket connection to the backend and distributes live prices to all
+  components that need them:
+</p>
+<pre>
+<span class="cm">// Simplified hook logic</span>
+<span class="kw">const</span> ws = <span class="kw">new</span> <span class="fn">WebSocket</span>(<span class="str">"ws://localhost:8000/ws/live"</span>);
+
+ws.onmessage = (event) =&gt; {
+  <span class="kw">const</span> data = JSON.parse(event.data);
+  <span class="cm">// data = { RELIANCE: {price: 1248.5, change: -2.68}, TCS: {...}, ... }</span>
+  setLiveData(data);
+};
+
+<span class="cm">// Auto-reconnect on disconnect</span>
+ws.onclose = () =&gt; setTimeout(connect, <span class="num">3000</span>);
+</pre>
+
+<h2 class="sec">5e. PortfolioContext — Virtual Trading Engine</h2>
+<p>Manages the user's simulated trading account entirely in React state, persisted to Firestore:</p>
+<ul>
+  <li><strong>Balance</strong>: starts at ₹1,00,000; decremented on BUY, incremented on SELL</li>
+  <li><strong>Holdings</strong>: array of <code>{symbol, qty, avgPrice}</code> objects; averaged on multiple buys</li>
+  <li><strong>Orders</strong>: history of all executed trades with P&amp;L for sells</li>
+  <li><strong>Auto-reset</strong>: if balance goes negative, automatically resets to ₹1,00,000</li>
+</ul>
+
+<!-- ═══ 6. FIREBASE ═══ -->
+<div class="break"></div>
+<h1 class="sec">6. Firebase Integration</h1>
+
+<h2 class="sec">6a. Authentication</h2>
+<p>Firebase Authentication handles two sign-in methods:</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+  <div class="card blue">
+    <h4>Google OAuth</h4>
+    <p>One-click via <code>signInWithPopup(auth, googleProvider)</code>. Firebase handles the entire OAuth flow — no backend needed. User's Google profile photo and display name are automatically available.</p>
+  </div>
+  <div class="card green">
+    <h4>Email / Password</h4>
+    <p>Standard email + password using <code>createUserWithEmailAndPassword</code> for signup and <code>signInWithEmailAndPassword</code> for login. Display name is set via <code>updateProfile()</code>.</p>
+  </div>
+</div>
+<p>
+  <code>AuthContext.jsx</code> wraps the app with <code>onAuthStateChanged</code> — a Firebase listener that
+  persists sessions across page refreshes. <code>AuthGuard.jsx</code> redirects unauthenticated users to
+  <code>/login</code> before any protected route renders.
+</p>
+
+<h2 class="sec">6b. Firestore Cloud Database</h2>
+<p>Each authenticated user has their own document tree in Firestore:</p>
+<pre>
+Firestore Database
+└── users/
+    └── {uid}/                         <span class="cm"># Firebase User ID</span>
+        └── data/
+            ├── watchlist              <span class="cm"># Document</span>
+            │   └── symbols: ["RELIANCE", "TCS", ...]
+            └── portfolio             <span class="cm"># Document</span>
+                ├── balance:  95200.50
+                ├── holdings: [{symbol, qty, avgPrice}, ...]
+                └── orders:   [{id, side, symbol, qty, price, pl}, ...]
+</pre>
+<p>
+  <strong>Watchlist</strong> uses <code>onSnapshot()</code> for real-time subscription — if you add a stock on
+  one device, it instantly appears on another. <strong>Portfolio</strong> uses <code>getDoc()</code> on login
+  and <code>setDoc()</code> on every balance/holdings change (with a load-guard to prevent overwriting
+  Firestore data with defaults during initial load).
+</p>
+
+<h2 class="sec">6c. Security Rules</h2>
+<p>Firestore security rules ensure users can only read/write their own data:</p>
+<pre>
+rules_version = <span class="str">'2'</span>;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=<span class="str">**</span>} {
+      allow read, write: <span class="kw">if</span> request.auth != <span class="kw">null</span>
+                         &amp;&amp; request.auth.uid == uid;
+    }
+  }
+}
+</pre>
+
+<!-- ═══ 7. HOW PRICES WORK ═══ -->
+<div class="break"></div>
+<h1 class="sec">7. How Dynamic Prices Work — End-to-End</h1>
+<p>This is the most important technical aspect of GreenCandle. Here is the complete data flow:</p>
+
+<div class="card blue">
+  <h4>Price Update Pipeline</h4>
+  <div style="font-family:'Fira Code',monospace;font-size:9.5pt;line-height:2.2;">
+    <div>① <strong>App Start</strong> → FastAPI starts → background thread seeds prices from yfinance (intraday 1m data)</div>
+    <div>② <strong>Every 5 min</strong> → asyncio task → re-seeds prices from yfinance (keeps prices fresh)</div>
+    <div>③ <strong>Upstox Connected</strong> → MarketDataStreamerV3 WebSocket → updates LIVE_PRICES on every tick</div>
+    <div>④ <strong>Browser Connects</strong> → <code>ws://localhost:8000/ws/live</code> → receives LIVE_PRICES every 1 second</div>
+    <div>⑤ <strong>useWatchlistWS hook</strong> → parses JSON → sets React state <code>liveData</code></div>
+    <div>⑥ <strong>Watchlist</strong> → renders price + change% from <code>liveData[symbol]</code></div>
+    <div>⑦ <strong>TradingChart</strong> → calls <code>series.update({time, open, high, low, close})</code> on last candle</div>
+    <div>⑧ <strong>Ticker Bar</strong> → Layout shows NIFTY 50 + SENSEX from same <code>liveData</code></div>
+  </div>
+</div>
+
+<h2 class="sec">Without Upstox (yfinance mode)</h2>
+<ul>
+  <li>Prices are accurate to within <strong>5 minutes</strong> (yfinance refresh interval)</li>
+  <li>intraday change% is calculated as <code>(current_price − today_open) / today_open × 100</code></li>
+  <li>Works perfectly during market hours; shows last candle after market close</li>
+</ul>
+
+<h2 class="sec">With Upstox (live tick mode)</h2>
+<ul>
+  <li>Prices update on <strong>every tick</strong> — typically within 100–500ms of the actual trade on NSE</li>
+  <li>Change% uses <code>(LTP − Previous Close) / Previous Close × 100</code> (official day change)</li>
+  <li>The TradingChart candle updates in real-time, matching what you'd see on Zerodha Kite</li>
+</ul>
+
+<!-- ═══ 8. FEATURES ═══ -->
+<div class="break"></div>
+<h1 class="sec">8. Key Features Deep-Dive</h1>
+
+<div class="card green">
+  <h4>📊 Professional Candlestick Chart</h4>
+  <ul>
+    <li>Built on TradingView's <strong>lightweight-charts</strong> library</li>
+    <li>Supports: 1m, 3m, 5m, 15m, 1h, 1d, 1w intervals</li>
+    <li>Overlays: EMA 9, EMA 21, SMA 50</li>
+    <li>Volume histogram with colour-coded bars (green up / red down)</li>
+    <li>Crosshair with OHLCV tooltip</li>
+    <li>Auto-scales Y axis; double-click Y axis to auto-fit</li>
+  </ul>
+</div>
+
+<div class="card purple">
+  <h4>🖊️ Drawing Tools (13 types)</h4>
+  <ul>
+    <li>Trend Line, Ray, Extended Line</li>
+    <li>Horizontal Line, Vertical Line</li>
+    <li>Rectangle, Circle/Ellipse</li>
+    <li>Fibonacci Retracement (7 levels with colours)</li>
+    <li>Fibonacci Fan</li>
+    <li>Andrews' Pitchfork (3-point)</li>
+    <li>Text Annotations</li>
+    <li>All drawings use price + time coordinates (survive zoom/rescale)</li>
+    <li>Ctrl+Z undo, Delete key to remove selected</li>
+  </ul>
+</div>
+
+<div class="card blue">
+  <h4>📱 Bar Replay Mode</h4>
+  <p>
+    Loads historical data and allows the user to replay past market sessions candle-by-candle.
+    A playback bar at the bottom controls play/pause, speed (1×–8×), and progress. The user can practice
+    technical analysis on historical data as if it were happening live.
+  </p>
+</div>
+
+<div class="card orange">
+  <h4>💼 Virtual Portfolio</h4>
+  <ul>
+    <li>₹1,00,000 starting virtual balance per user</li>
+    <li>BUY: deducts cost from balance, adds to holdings (average cost basis if multiple buys)</li>
+    <li>SELL: adds proceeds to balance, calculates P&amp;L, records trade to SQLite</li>
+    <li>Portfolio page shows: holdings table, P&amp;L per position, order history, balance</li>
+    <li>Reset button to start fresh</li>
+    <li>All data persisted to Firestore — survives page refresh</li>
+  </ul>
+</div>
+
+<!-- ═══ 9. UI DESIGN ═══ -->
+<h1 class="sec">9. UI / UX Design Decisions</h1>
+<ul>
+  <li><strong>Dark theme</strong>: Background <code>#030303</code> — mirrors professional trading terminals (Kite, ThinkorSwim)</li>
+  <li><strong>Emerald green accent</strong>: <code>#22c55e</code> for positive price movements and brand colour</li>
+  <li><strong>Resizable panels</strong>: Chart ↔ Order Entry split is draggable; Order Entry ↔ News is draggable</li>
+  <li><strong>Collapsible sidebar</strong>: The watchlist sidebar can collapse to icon-only mode for maximum chart space</li>
+  <li><strong>Fixed top bars</strong>: The header (logo + ticker) and the NIFTY/SENSEX bar are fixed height and don't scroll</li>
+  <li><strong>Scrolling ticker</strong>: CSS keyframe animation scrolls stock prices continuously across the header</li>
+  <li><strong>Loading states</strong>: Skeleton loading for news, spinner for auth, progress bar for quiz</li>
+</ul>
+
+<!-- ═══ 10. DATA FLOW ═══ -->
+<div class="break"></div>
+<h1 class="sec">10. Data Flow Diagrams</h1>
+
+<h2 class="sec">Authentication Flow</h2>
+<div class="flow">
+  <div class="flow-box">User visits /</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">AuthGuard checks Firebase</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Not logged in → /login</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Google / Email login</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Firebase sets user object</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Navigate to /</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Load Firestore data</div>
+</div>
+
+<h2 class="sec">Trade Execution Flow</h2>
+<div class="flow">
+  <div class="flow-box">User enters qty</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Clicks BUY</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">executeTrade() in Portfolio Context</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Deducts from balance</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Updates holdings state</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">useEffect writes to Firestore</div>
+</div>
+
+<div class="flow" style="margin-top:8px">
+  <div class="flow-box">User clicks SELL</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Calculates P&amp;L</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">POSTs to /api/trades (SQLite)</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Updates balance + removes holding</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-box">Firestore updated</div>
+</div>
+
+<!-- ═══ 11. GUIDE ═══ -->
+<div class="break"></div>
+<h1 class="sec">11. How to Explain This Project to Your Guide</h1>
+<p style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
+  <strong>💡 Tip:</strong> Follow this script step by step. Start broad, then go deep on what the guide asks
+  about. Always connect technical choices to real-world reasons.
+</p>
+
+<div class="guide-step">
+  <span class="step-num">1</span>
+  <strong>Open with the objective (30 seconds)</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"My project is called GreenCandle — it's a real-time stock market simulation platform for the
+    Indian market. The core problem I'm solving is that beginner traders have no safe way to practice reading
+    charts and executing trades. GreenCandle gives them a professional trading terminal with real NSE prices,
+    but uses virtual money — so there's no financial risk."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">2</span>
+  <strong>Describe the tech stack simply</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"I built it as a full-stack web application. The frontend is React.js with Vite as the build tool.
+    The backend is Python FastAPI. For database I use Firebase Firestore for user data and SQLite for trade
+    records. Authentication is handled by Firebase — supporting both Google login and email/password."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">3</span>
+  <strong>Explain how prices are real and dynamic (key question)</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"The prices are real NSE market prices. I use two data sources. First, a Python library called
+    yfinance, which fetches real stock prices from Yahoo Finance every 5 minutes automatically. For true
+    real-time tick data, I integrated the Upstox Market Data API — Upstox is a SEBI-registered broker.
+    Once the user authenticates with Upstox via OAuth 2.0, the backend receives live trade-by-trade prices
+    through a WebSocket connection. These are pushed to the browser also via WebSocket, so the chart and
+    watchlist update within milliseconds of actual trades on NSE."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">4</span>
+  <strong>Explain the chart and drawing tools</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"The chart is built using lightweight-charts — TradingView's open-source charting library. I
+    support 8 time intervals from 1 minute to 1 week. I built a custom HTML5 Canvas overlay on top of the
+    chart that supports 13 drawing tools including Fibonacci retracements, trend lines, and Andrews'
+    Pitchfork. The key technical challenge was making these tools stay correctly positioned when the user
+    zooms or rescales the Y axis — I solved this by storing coordinates as price and logical time values
+    rather than pixel positions, and recalculating pixel coordinates on every render frame."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">5</span>
+  <strong>Explain user isolation / authentication</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"Each user has a completely separate view. I use Firebase Authentication for login. After logging
+    in, all user data — their watchlist and portfolio — is stored in Firestore Cloud Database under their
+    unique Firebase UID. Firestore security rules ensure users cannot access each other's data. So if User
+    A logs in and User B logs in on the same browser, each sees only their own portfolio and watchlist."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">6</span>
+  <strong>Mention additional features to show breadth</strong>
+  <p style="margin-top:8px;margin-left:34px;">
+    <em>"Beyond the core trading functionality, I also built: a Bar Replay mode where the user can replay
+    historical market sessions candle-by-candle to practice TA; a real-time news panel that aggregates
+    RSS feeds from Economic Times, Moneycontrol, and LiveMint; and an Education page that links to all
+    modules and chapters from Zerodha Varsity — India's most popular free trading education platform."</em>
+  </p>
+</div>
+
+<div class="guide-step">
+  <span class="step-num">7</span>
+  <strong>Be ready for these likely questions</strong>
+  <table style="margin-top:12px;">
+    <tr><th>Question</th><th>Your Answer</th></tr>
+    <tr><td>"Is the data real?"</td><td>Yes — powered by Upstox NSE API (live ticks) and yfinance (5-min refresh) for actual market prices.</td></tr>
+    <tr><td>"Why FastAPI?"</td><td>FastAPI's async support is ideal for WebSocket connections. It's also 2–3× faster than Flask for high-frequency data endpoints.</td></tr>
+    <tr><td>"Why Firebase over a custom DB?"</td><td>Firebase provides authentication AND a realtime cloud database in one SDK. It eliminates backend auth code and gives free, scalable cloud storage.</td></tr>
+    <tr><td>"What's the novelty?"</td><td>Real-time NSE data integration with professional charting tools + per-user isolation via Firebase + custom HTML5 canvas drawing engine — all in a single cohesive platform.</td></tr>
+    <tr><td>"What's the limitation?"</td><td>Upstox API requires a paid brokerage account and is only active during NSE trading hours (9:15 AM – 3:30 PM IST). yfinance is used as a fallback at all other times.</td></tr>
+  </table>
+</div>
+
+<div class="footer-note">
+  GreenCandle — Technical Project Report · April 2026 · All prices are for virtual/educational use only.
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>

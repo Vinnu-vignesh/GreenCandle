@@ -1,0 +1,40 @@
+# Python backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.env
+backend/trades.db
+*.db
+
+# Node / React frontend
+trade-station/node_modules/
+trade-station/dist/
+trade-station/.env
+trade-station/.env.local
+trade-station/.env.production
+
+# GreenCandleApp (Android)
+GreenCandleApp/node_modules/
+GreenCandleApp/dist/
+GreenCandleApp/android/
+GreenCandleApp/.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Firebase service account keys (NEVER push these)
+*serviceAccount*.json
+firebase-adminsdk*.json
