@@ -59,7 +59,8 @@ class TradeRecord(BaseModel):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://green-candle-git-main-vinnus-projects-da853887.vercel.app/"]
+    //allow_origins=["https://green-candle-git-main-vinnus-projects-da853887.vercel.app/"]
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
