@@ -33,7 +33,7 @@ export default function Portfolio() {
 
   const clearAllTrades = async () => {
     if (!window.confirm('Clear all trade records? This cannot be undone.')) return;
-    await fetch('http://localhost:8000/api/trades', { method: 'DELETE' });
+    await fetch('https://greencandle.onrender.com/api/trades', { method: 'DELETE' });
     setTrades([]);
   };
 
