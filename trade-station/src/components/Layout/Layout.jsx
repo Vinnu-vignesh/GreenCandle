@@ -234,7 +234,7 @@ export default function Layout() {
 
           {/* Connect Upstox */}
           <a
-            href="http://localhost:8000/auth/login"
+            href="https://greencandle.onrender.com/auth/login"
             target="_blank"
             rel="noreferrer"
             title="Connect Upstox for real-time NSE feed"
