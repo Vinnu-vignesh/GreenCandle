@@ -12,7 +12,7 @@ function round2(n) { return Math.round(n * 100) / 100; }
 // ── Save a completed trade to the backend DB ──
 async function saveTradeRecord(record) {
   try {
-    await fetch('http://localhost:8000/api/trades', {
+    await fetch('https://greencandle.onrender.com/api/trades', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record),
