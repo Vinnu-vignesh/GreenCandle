@@ -203,7 +203,7 @@ export default function TradingChart({ symbol = 'RELIANCE', liveData = {} }) {
       chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.8, bottom: 0 } });
       volumeRef.current = volSeries;
 
-      fetch(`http://localhost:8000/api/historical/${encodeURIComponent(symbol)}?interval=${timeframe}`)
+      fetch(`https://greencandle.onrender.com/api/historical/${encodeURIComponent(symbol)}?interval=${timeframe}`)
         .then(r => r.json())
         .then(rawData => {
           if (destroyed) return;
@@ -238,7 +238,7 @@ export default function TradingChart({ symbol = 'RELIANCE', liveData = {} }) {
         });
 
       try {
-        ws = new WebSocket(`ws://localhost:8000/ws/live/${encodeURIComponent(symbol)}?interval=${timeframe}`);
+        ws = new WebSocket(`wss://greencandle.onrender.com/ws/live/${encodeURIComponent(symbol)}?interval=${timeframe}`);
         wsRef.current = ws;
         ws.onmessage = (event) => {
           if (destroyed) return;
