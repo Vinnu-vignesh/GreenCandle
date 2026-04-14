@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const WS_URL = 'ws://localhost:8000/ws/watchlist';
+const WS_URL = 'wss://greencandle.onrender.com/ws/watchlist';
 
 /**
  * Shared hook for live watchlist prices via WebSocket.
