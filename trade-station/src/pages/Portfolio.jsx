@@ -17,7 +17,7 @@ export default function Portfolio() {
   const fetchTrades = useCallback(async () => {
     setTradesLoading(true);
     try {
-      const res  = await fetch('http://localhost:8000/api/trades?limit=500');
+      const res  = await fetch('https://greencandle.onrender.com/api/trades?limit=500');
       const data = await res.json();
       setTrades(Array.isArray(data) ? data : []);
     } catch {
