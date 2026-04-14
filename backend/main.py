@@ -192,7 +192,7 @@ def start_upstox_stream():
 @app.get("/auth/login")
 def upstox_login():
     client_id    = os.getenv("UPSTOX_CLIENT_ID")
-    redirect_uri = "https://greencandle.onrender.com/callback"
+    redirect_uri = os.getenv("UPSTOX_REDIRECT_URI")
     auth_url = (
         f"https://api.upstox.com/v2/login/authorization/dialog"
         f"?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}"
@@ -206,7 +206,7 @@ def upstox_callback(code: str):
 
     client_id     = os.getenv("UPSTOX_CLIENT_ID")
     client_secret = os.getenv("UPSTOX_CLIENT_SECRET")
-    redirect_uri  = "https://greencandle.onrender.com/callback"
+    redirect_uri  = os.getenv("UPSTOX_REDIRECT_URI")
     token_url     = "https://api.upstox.com/v2/login/authorization/token"
     headers       = {"accept": "application/json", "Content-Type": "application/x-www-form-urlencoded"}
     data          = {
