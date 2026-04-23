@@ -102,6 +102,7 @@ for sym in LIVE_PRICES:
     if sym == "NIFTY 50":    YF_TICKER_MAP[sym] = "^NSEI"
     elif sym == "SENSEX":    YF_TICKER_MAP[sym] = "^BSESN"
     elif sym == "BANKNIFTY": YF_TICKER_MAP[sym] = "^NSEBANK"
+    elif sym == "TATAMOTORS": YF_TICKER_MAP[sym] = "TMCV.NS"
     else:                    YF_TICKER_MAP[sym] = f"{sym}.NS"
 
 
