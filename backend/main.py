@@ -66,8 +66,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://green-candle-git-main-vinnus-projects-da853887.vercel.app")
+
 @app.get("/")
-def home():
+def home(code: Optional[str] = None):
+    """Root route — also handles Upstox OAuth redirect (code param)."""
+    if code:
+        # Upstox redirects here after login with ?code=xxx
+        return _exchange_token(code)
     return {"message": "Backend running"}
 
 UPSTOX_ACCESS_TOKEN = None
@@ -201,8 +207,8 @@ def upstox_login():
     return RedirectResponse(url=auth_url)
 
 
-@app.get("/callback")
-def upstox_callback(code: str):
+def _exchange_token(code: str):
+    """Internal: exchange auth code for access token, start stream, redirect to frontend."""
     global UPSTOX_ACCESS_TOKEN
 
     client_id     = os.getenv("UPSTOX_CLIENT_ID")
@@ -220,9 +226,27 @@ def upstox_callback(code: str):
         token_data = response.json()
         UPSTOX_ACCESS_TOKEN = token_data.get("access_token")
         start_upstox_stream()
-        return {"message": "Login successful!", "status": "Real Upstox Stream Started"}
+        print("[Upstox] Access token obtained — real-time stream started.")
+        # Redirect user back to the frontend with a success flag
+        return RedirectResponse(url=f"{FRONTEND_URL}?upstox=connected")
     else:
-        return {"error": "Failed to get token"}
+        print(f"[Upstox] Token exchange failed: {response.text}")
+        return RedirectResponse(url=f"{FRONTEND_URL}?upstox=error")
+
+
+@app.get("/callback")
+def upstox_callback(code: str):
+    """Fallback callback route in case redirect URI is set to /callback."""
+    return _exchange_token(code)
+
+
+@app.get("/api/upstox-status")
+def upstox_status():
+    """Frontend polls this to know if real Upstox stream is active."""
+    return {
+        "authenticated": UPSTOX_ACCESS_TOKEN is not None,
+        "streaming":     UPSTOX_AVAILABLE and UPSTOX_ACCESS_TOKEN is not None,
+    }
 
 
 # --- TRADE RECORD BOOK (SQLite) ---
