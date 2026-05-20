@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   LineChart, Wallet, History, GraduationCap,
   PlayCircle, Settings, Zap, RefreshCw, X, Menu,
@@ -37,6 +37,8 @@ function useIsMobile() {
   return isMobile;
 }
 
+const BACKEND_URL = 'https://greencandle.onrender.com';
+
 export default function Layout() {
   const { balance, resetPortfolio } = usePortfolio();
   const { liveData } = useWatchlistWS();
@@ -51,6 +53,40 @@ export default function Layout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [activeSymbol, setActiveSymbol] = useState('RELIANCE');
+
+  // ── Upstox connection status ──
+  const [upstoxStatus, setUpstoxStatus] = useState('unknown'); // 'unknown' | 'live' | 'offline'
+
+  const checkUpstoxStatus = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/upstox-status`);
+      const data = await res.json();
+      setUpstoxStatus(data.streaming ? 'live' : 'offline');
+    } catch {
+      setUpstoxStatus('offline');
+    }
+  }, []);
+
+  // Check status on mount + every 30s
+  useEffect(() => {
+    checkUpstoxStatus();
+    const interval = setInterval(checkUpstoxStatus, 30000);
+    return () => clearInterval(interval);
+  }, [checkUpstoxStatus]);
+
+  // Detect ?upstox=connected redirect from backend after OAuth
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const upstoxParam = params.get('upstox');
+    if (upstoxParam === 'connected') {
+      setUpstoxStatus('live');
+      // Clean the URL without reloading
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (upstoxParam === 'error') {
+      setUpstoxStatus('offline');
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   // Close drawer on route change (mobile)
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
@@ -234,14 +270,23 @@ export default function Layout() {
 
           {/* Connect Upstox */}
           <a
-            href="https://greencandle.onrender.com/auth/login"
+            href={`${BACKEND_URL}/auth/login`}
             target="_blank"
             rel="noreferrer"
-            title="Connect Upstox for real-time NSE feed"
-            className="flex items-center gap-1.5 text-xs bg-blue-600/80 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-md font-semibold transition-colors border border-blue-500/30"
+            title={upstoxStatus === 'live' ? 'Upstox live stream active' : 'Connect Upstox for real-time NSE feed'}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-semibold transition-colors border ${
+              upstoxStatus === 'live'
+                ? 'bg-emerald-600/80 hover:bg-emerald-500 text-white border-emerald-500/30'
+                : 'bg-blue-600/80 hover:bg-blue-500 text-white border-blue-500/30'
+            }`}
           >
             <Zap size={11} />
-            <span className="hidden lg:inline">Upstox</span>
+            <span className="hidden lg:inline">
+              {upstoxStatus === 'live' ? 'Live ✓' : 'Upstox'}
+            </span>
+            {upstoxStatus === 'live' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+            )}
           </a>
 
           {/* Balance — hidden on mobile (shown in bottom bar) */}
